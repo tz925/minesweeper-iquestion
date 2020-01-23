@@ -102,24 +102,30 @@ function createTile(x,y) {
 
 const setUpMine = (x, y) => {
   // only run once right after first click. will set up mines
+  let rows = 9;
+  let columns = 9;
 
-  for (var i = 0; i < totalMines; i++) {
-    let col = 0;
-    let row = 0;
-    if (diff === 0) {
-      col = randomIntFromInterval(0, 8);
-      row = randomIntFromInterval(0, 8);
-    }else if (diff === 1) {
-      col = randomIntFromInterval(0, 15);
-      row = randomIntFromInterval(0, 15);
-    }else if (diff === 2){
-      col = randomIntFromInterval(0, 15);
-      row = randomIntFromInterval(0, 29);
+  if (diff === 1) {
+    rows = 16;
+    columns = 16;
+  }else if (diff === 2) {
+    rows = 30;
+    columns = 16;
+  }
+  let bagOfLocations = []
+
+  for (let yy = 0; yy < rows; yy++) {
+    for (let xx = 0; xx < columns; xx++) {
+      bagOfLocations.push({row: yy, col: xx})
     }
-    let count = 0;
+  }
 
-    if (matrix[row][col].isMine) {i--;}
-    else if (row === y && col === x) { i--; } //first click can not be mine.
+  shuffle(bagOfLocations)
+  for (var i = 0; i < totalMines; i++) {
+    let location = bagOfLocations.pop()
+    let {row, col} = location;
+
+    if (row === y && col === x) { i--; } //first click can not be mine.
     else{
       matrix[row][col].isMine = true;
       // make surrounding cell.adjacentMine++
@@ -274,4 +280,13 @@ const checkAroundHelper = (func, x, y) => {
       }
     }
   }
+}
+
+function shuffle(a) {
+  // https://stackoverflow.com/a/6274381
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
